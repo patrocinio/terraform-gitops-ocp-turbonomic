@@ -62,11 +62,6 @@ variable "git_credentials" {
   description = "The credentials for the gitops repo(s)"
 }
 
-variable "namespace" {
-  type        = string
-  description = "The namespace where the application should be deployed"
-}
-
 variable "cluster_ingress_hostname" {
   type        = string
   description = "Ingress hostname of the IKS cluster."
@@ -95,4 +90,27 @@ variable "server_name" {
   type        = string
   description = "The name of the server"
   default     = "default"
+}
+
+variable "service_account_name" {
+  description = "The name of the service account that should be used for the deployment"
+  type        = string
+  default     = "t8c-operator"
+}
+
+variable "probes" {
+  description = "The probes to deploy with turbonomic"
+  type        = list(string)
+  default     = ["kubeturbo","instana","openshiftingress"]
+}
+
+variable "storage_class_name" {
+  description = "Name of the block storage class to use - if multizone deployment then waitforfirstconsumer must be set on storageclass binding mode"
+  type        = string
+}
+
+variable "namespace" {
+  type        = string
+  description = "Name of the existing namespace where turbo will be deployed."
+  default     = "turbonomic"
 }

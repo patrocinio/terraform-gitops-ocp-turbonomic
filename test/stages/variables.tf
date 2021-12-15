@@ -68,7 +68,7 @@ variable "git_org" {
 }
 
 variable "git_repo" {
-  default = "git-module-test"
+  default = "git-module-turbo"
 }
 
 variable "gitops_namespace" {
@@ -76,4 +76,10 @@ variable "gitops_namespace" {
 }
 
 variable "git_username" {
+}
+
+variable "turbo_namespace" {
+  type        = string
+  description = "Name of the existing namespace where turbo will be deployed."
+  default     = "turbonomic"
 }
