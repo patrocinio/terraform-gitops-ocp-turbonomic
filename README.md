@@ -1,5 +1,5 @@
 #  Turbonomic Gitops terraform module
-
+![Verify and release module](https://github.com/cloud-native-toolkit/terraform-gitops-ocp-turbonomic/workflows/Verify%20and%20release%20module/badge.svg)
 
 Deploys Turbonomic operator into the cluster and creates an instance via gitops.
 
