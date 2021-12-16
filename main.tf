@@ -7,7 +7,7 @@ locals {
   //service_url   = "http://${local.name}.${var.namespace}"
   //values_content = {
   //}
-  layer = "infrastructure"
+  layer = "applications"
   application_branch = "main"
   layer_config = var.gitops_config[local.layer]
 }
@@ -26,9 +26,9 @@ module setup_clis {
   }
 } */
 
-resource null_resource config_ClusterRole {
+resource null_resource deployOperator {
   provisioner "local-exec" {
-    command = "${path.module}/scripts/configClusterRole.sh ${var.service_account_name} ${var.namespace} '${local.yaml_dir}'"
+    command = "${path.module}/scripts/deployOp.sh '${local.yaml_dir}'"
 
     environment = {
       BIN_DIR = local.bin_dir
@@ -39,7 +39,7 @@ resource null_resource config_ClusterRole {
 
 
 resource null_resource setup_gitops {
-  depends_on = [null_resource.config_ClusterRole]
+  depends_on = [null_resource.deployOperator]
 
   provisioner "local-exec" {
     command = "${local.bin_dir}/igc gitops-module '${local.name}' -n '${var.namespace}' --contentDir '${local.yaml_dir}' --serverName '${var.server_name}' -l '${local.layer}' --debug"
