@@ -8,7 +8,7 @@ NAMESPACE=$(cat .namespace)
 BRANCH="main"
 SERVER_NAME="default"
 TYPE="base"
-LAYER="3-applications"
+LAYER="1-infrastructure"
 
 COMPONENT_NAME="turbonomic"
 

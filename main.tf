@@ -7,7 +7,7 @@ locals {
   //service_url   = "http://${local.name}.${var.namespace}"
   //values_content = {
   //}
-  layer = "applications"
+  layer = "infrastructure"
   application_branch = "main"
   layer_config = var.gitops_config[local.layer]
 }
