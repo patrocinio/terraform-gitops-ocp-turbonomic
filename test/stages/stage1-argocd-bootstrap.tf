@@ -1,5 +1,5 @@
 module "argocd-bootstrap" {
-  source = "github.com/cloud-native-toolkit/terraform-tools-argocd-bootstrap.git"
+  source = "github.com/cloud-native-toolkit/terraform-tools-argocd-bootstrap.git?ref=v1.4.2"
 
   cluster_type        = module.dev_cluster.platform.type_code
   ingress_subdomain   = module.dev_cluster.platform.ingress
