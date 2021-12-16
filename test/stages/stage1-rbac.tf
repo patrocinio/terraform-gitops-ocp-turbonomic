@@ -1,5 +1,5 @@
 module "gitops_rbac" {
-  source = "github.com/ibm-garage-cloud/terraform-gitops-rbac.git"
+  source = "github.com/cloud-native-toolkit/terraform-gitops-rbac.git"
 
   gitops_config = module.gitops.gitops_config
   git_credentials = module.gitops.git_credentials
