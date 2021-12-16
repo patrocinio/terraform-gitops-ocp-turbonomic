@@ -1,4 +1,4 @@
-module "gitops_module_turbo" {
+module "gitops_turbo" {
   source = "./module"
 
   gitops_config = module.gitops.gitops_config
