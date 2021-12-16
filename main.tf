@@ -27,12 +27,8 @@ module setup_clis {
 } */
 
 resource null_resource config_ClusterRole {
-  triggers = {
-    tsaname = var.service_account_name
-  }
-
   provisioner "local-exec" {
-    command = "${path.module}/scripts/configClusterRole.sh ${self.triggers.tsaname} ${var.namespace} '${local.yaml_dir}'"
+    command = "${path.module}/scripts/configClusterRole.sh ${var.service_account_name} ${var.namespace} '${local.yaml_dir}'"
 
     environment = {
       BIN_DIR = local.bin_dir
