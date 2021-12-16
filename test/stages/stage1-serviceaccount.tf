@@ -1,12 +1,11 @@
-module "gitops_rbac" {
-  source = "github.com/cloud-native-toolkit/terraform-gitops-rbac.git"
+module "gitops_service_account" {
+  source = "github.com/cloud-native-toolkit/terraform-gitops-service-account.git"
 
   gitops_config = module.gitops.gitops_config
   git_credentials = module.gitops.git_credentials
-  service_account_namespace = module.gitops_turbo_namespace.name
-  service_account_name      = "t8c-operator"
   namespace = module.gitops_turbo_namespace.name
-  rules = [{
+  name = "t8c-operator"
+  rbac_rules = [{
     apiGroups = [""]
     resources = ["configmaps","endpoints","events","persistentvolumeclaims","pods","secrets","serviceaccounts","services"]
     verbs = ["*"]
@@ -65,6 +64,6 @@ module "gitops_rbac" {
     verbs = ["use"]
   }
   ]
+  sccs = ["anyuid","privileged"]
   server_name = module.gitops.server_name
 }
-
