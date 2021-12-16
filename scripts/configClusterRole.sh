@@ -6,14 +6,14 @@ DEST_DIR="$3"
 
 mkdir -p "${DEST_DIR}"
 
-cat > "${DEST_DIR}/cluster_role.yaml" << EOL
+cat > "${DEST_DIR}/roles.yaml" << EOL
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   creationTimestamp: null
   name: ${SANAME}
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "0"
 rules:
 - apiGroups:
   - ""
@@ -118,15 +118,13 @@ rules:
     - securitycontextconstraints
   verbs:
     - use
-EOL
-#build cluster role binding
-cat > "${DEST_DIR}/cluster_role_binding.yaml" << EOL
+---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: ${SANAME}
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "0"
 subjects:
 - kind: ServiceAccount
   name: ${SANAME}
@@ -134,5 +132,6 @@ subjects:
 roleRef:
   kind: ClusterRole
   name: ${SANAME}
-  apiGroup: rbac.authorization.k8s.io
+  apiGroup: rbac.authorization.k8s.io    
 EOL
+

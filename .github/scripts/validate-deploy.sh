@@ -4,7 +4,7 @@ GIT_REPO=$(cat git_repo)
 GIT_TOKEN=$(cat git_token)
 
 export KUBECONFIG=$(cat .kubeconfig)
-NAMESPACE=$(cat .turbo_namespace)
+NAMESPACE=$(cat .namespace)
 BRANCH="main"
 SERVER_NAME="default"
 TYPE="base"
@@ -28,13 +28,13 @@ fi
 echo "Printing argocd/${LAYER}/cluster/${SERVER_NAME}/${TYPE}/${NAMESPACE}-${COMPONENT_NAME}.yaml"
 cat "argocd/${LAYER}/cluster/${SERVER_NAME}/${TYPE}/${NAMESPACE}-${COMPONENT_NAME}.yaml"
 
-if [[ ! -f "payload/${LAYER}/namespace/${NAMESPACE}/${COMPONENT_NAME}/cluster_role.yaml" ]]; then
-  echo "Application values not found - payload/2-services/namespace/${NAMESPACE}/${COMPONENT_NAME}/cluster_role.yaml"
+if [[ ! -f "payload/${LAYER}/namespace/${NAMESPACE}/${COMPONENT_NAME}/roles.yaml" ]]; then
+  echo "Application values not found - payload/2-services/namespace/${NAMESPACE}/${COMPONENT_NAME}/roles.yaml"
   exit 1
 fi
 
-echo "Printing payload/${LAYER}/namespace/${NAMESPACE}/${COMPONENT_NAME}/cluster_role.yaml"
-cat "payload/${LAYER}namespace/${NAMESPACE}/${COMPONENT_NAME}/cluster_role.yaml"
+echo "Printing payload/${LAYER}/namespace/${NAMESPACE}/${COMPONENT_NAME}/roles.yaml"
+cat "payload/${LAYER}namespace/${NAMESPACE}/${COMPONENT_NAME}/roles.yaml"
 
 count=0
 until kubectl get namespace "${NAMESPACE}" 1> /dev/null 2> /dev/null || [[ $count -eq 20 ]]; do
@@ -51,20 +51,8 @@ else
   sleep 30
 fi
 
-#DEPLOYMENT="${COMPONENT_NAME}-${BRANCH}"
-#count=0
-#until kubectl get deployment "${DEPLOYMENT}" -n "${NAMESPACE}" || [[ $count -eq 20 ]]; do
-#  echo "Waiting for deployment/${DEPLOYMENT} in ${NAMESPACE}"
-#  count=$((count + 1))
-#  sleep 15
-#done
-#
-#if [[ $count -eq 20 ]]; then
-#  echo "Timed out waiting for deployment/${DEPLOYMENT} in ${NAMESPACE}"
-#@  kubectl get all -n "${NAMESPACE}"
-# exit 1
-#fi
 
+### add more validation logic when done ####
 #kubectl rollout status "deployment/${DEPLOYMENT}" -n "${NAMESPACE}" || exit 1
 
 cd ..
