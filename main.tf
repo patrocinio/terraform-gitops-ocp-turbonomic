@@ -26,18 +26,15 @@ module setup_clis {
   }
 } */
 
-resource "null_resource" "config_ClusterRole" {
+resource null_resource config_ClusterRole {
   triggers = {
-    namespace = var.namespace
     tsaname = var.service_account_name
-    
   }
 
   provisioner "local-exec" {
-    command = "${path.module}/scripts/configClusterRole.sh ${self.triggers.tsaname} ${self.triggers.namespace} '${local.yaml_dir}'"
+    command = "${path.module}/scripts/configClusterRole.sh ${self.triggers.tsaname} ${var.namespace} '${local.yaml_dir}'"
 
     environment = {
-      //VALUES_CONTENT = yamlencode(local.values_content)
       BIN_DIR = local.bin_dir
     }
   }
