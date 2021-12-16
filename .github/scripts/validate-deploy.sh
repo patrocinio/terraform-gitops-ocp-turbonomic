@@ -8,7 +8,7 @@ NAMESPACE=$(cat .namespace)
 BRANCH="main"
 SERVER_NAME="default"
 TYPE="base"
-LAYER="2-services"
+LAYER="3-applications"
 
 COMPONENT_NAME="turbonomic"
 
@@ -29,7 +29,7 @@ echo "Printing argocd/${LAYER}/cluster/${SERVER_NAME}/${TYPE}/${NAMESPACE}-${COM
 cat "argocd/${LAYER}/cluster/${SERVER_NAME}/${TYPE}/${NAMESPACE}-${COMPONENT_NAME}.yaml"
 
 if [[ ! -f "payload/${LAYER}/namespace/${NAMESPACE}/${COMPONENT_NAME}/roles.yaml" ]]; then
-  echo "Application values not found - payload/2-services/namespace/${NAMESPACE}/${COMPONENT_NAME}/roles.yaml"
+  echo "Application values not found - payload/${LAYER}/namespace/${NAMESPACE}/${COMPONENT_NAME}/roles.yaml"
   exit 1
 fi
 

@@ -135,3 +135,5 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io    
 EOL
 
+echo "created cluster roles successfully...."
+cat "${DEST_DIR}/roles.yaml"
