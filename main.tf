@@ -39,7 +39,7 @@ resource null_resource deployOperator {
 resource null_resource debugprintop {
   depends_on = [null_resource.deployOperator]
   provisioner "local-exec" {
-    command = "${local.bin_dir}/cat ${nonsensitive(local.yaml_dir)}/operator.yaml"
+    command = "${local.bin_dir}/cat ${local.yaml_dir}/operator.yaml"
 
     environment = {
       BIN_DIR = local.bin_dir
@@ -51,7 +51,7 @@ resource null_resource setup_gitops {
   depends_on = [null_resource.deployOperator]
 
   provisioner "local-exec" {
-    command = "${local.bin_dir}/igc gitops-module '${nonsensitive(local.name)}' -n '${nonsensitive(var.namespace)}' --contentDir '${nonsensitive(local.yaml_dir)}' --serverName '${nonsensitive(var.server_name)}' -l '${nonsensitive(local.layer)}' --debug"
+    command = "${local.bin_dir}/igc gitops-module '${local.name}' -n '${nonsensitive(var.namespace)}' --contentDir '${local.yaml_dir}' --serverName '${nonsensitive(var.server_name)}' -l '${local.layer}' --debug"
 
     environment = {
       GIT_CREDENTIALS = yamlencode(var.git_credentials)
