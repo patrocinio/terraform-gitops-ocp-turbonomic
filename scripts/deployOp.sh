@@ -21,7 +21,8 @@ metadata:
     app.kubernetes.io/name: t8c-operator
     app.kubernetes.io/instance: t8c-operator
     app.kubernetes.io/managed-by: operator-life
-
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   replicas: 1
   selector:
@@ -60,3 +61,7 @@ spec:
       - name: operator-tmpfs0
         emptyDir: {}
 EOL
+
+if [[  -f "${DEST_DIR}/operator.yaml" ]]; then
+  echo "operator.yaml file found..."
+fi

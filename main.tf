@@ -39,7 +39,7 @@ resource null_resource deployOperator {
 resource null_resource debugprintop {
   depends_on = [null_resource.deployOperator]
   provisioner "local-exec" {
-    command = "${local.bin_dir}/cat ${local.yaml_dir}/operator.yaml"
+    command = "cat ${local.yaml_dir}/operator.yaml"
 
     environment = {
       BIN_DIR = local.bin_dir
