@@ -28,7 +28,7 @@ module setup_clis {
 
 resource null_resource deployOperator {
   provisioner "local-exec" {
-    command = "${path.module}/scripts/deployOp.sh '${local.yaml_dir}'"
+    command = "${path.module}/scripts/deployOp.sh '${local.yaml_dir}' '${var.service_account_name}'"
 
     environment = {
       BIN_DIR = local.bin_dir
