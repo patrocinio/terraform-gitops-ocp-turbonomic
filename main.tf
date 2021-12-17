@@ -16,17 +16,17 @@ module setup_clis {
   source = "github.com/cloud-native-toolkit/terraform-util-clis.git"
 }
 
-/* resource null_resource create_yaml {
+ resource null_resource create_yaml {
   provisioner "local-exec" {
-    command = "${path.module}/scripts/create-yaml.sh '${local.name}' '${local.yaml_dir}'"
+    command = "${path.module}/scripts/create-yaml.sh '${local.yaml_dir}' '${var.service_account_name}'"
 
     environment = {
-      VALUES_CONTENT = yamlencode(local.values_content)
+      BIN_DIR = local.bin_dir
     }
   }
-} */
+} 
 
-resource null_resource deployOperator {
+/*resource null_resource deployOperator {
   provisioner "local-exec" {
     command = "${path.module}/scripts/deployOp.sh '${local.yaml_dir}' '${var.service_account_name}'"
 
@@ -45,10 +45,10 @@ resource null_resource debugprintop {
       BIN_DIR = local.bin_dir
     }
   }
-} 
+} */
 
 resource null_resource setup_gitops {
-  depends_on = [null_resource.deployOperator]
+  depends_on = [null_resource.create_yaml]
 
   provisioner "local-exec" {
     command = "${local.bin_dir}/igc gitops-module '${local.name}' -n '${var.namespace}' --contentDir '${local.yaml_dir}' --serverName '${var.server_name}' -l '${local.layer}' --debug"
