@@ -9,7 +9,7 @@ SANAME="$2"
 mkdir -p "${DEST_DIR}"
 echo "adding xl chart..."
 #add chart to deployment directory
-##cp "${CHART_DIR}/charts.helm.k8s.io_xls.yaml" "${DEST_DIR}/xl.yaml"
+cp "${CHART_DIR}/charts.helm.k8s.io_xls.yaml" "${DEST_DIR}/xl.yaml"
 
 #create operator
 cat > "${DEST_DIR}/operator.yaml" << EOL
@@ -22,7 +22,7 @@ metadata:
     app.kubernetes.io/instance: t8c-operator
     app.kubernetes.io/managed-by: operator-life
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   replicas: 1
   selector:
