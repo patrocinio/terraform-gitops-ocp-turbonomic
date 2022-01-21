@@ -1,4 +1,4 @@
-!!map
+
 id: github.com/cloud-native-toolkit/terraform-gitops-ocp-turbonomic
 name: gitops-ocp-turbonomic
 type: terraform
