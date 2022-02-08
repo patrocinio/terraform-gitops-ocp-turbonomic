@@ -13,14 +13,21 @@ kind: Xl
 metadata:
   name: xl-release
   annotations:
-    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   global:
     repository: turbonomic
-    tag: 8.3.4
+    tag: 8.4.4
     externalArangoDBName: arango.turbo.svc.cluster.local
     storageClassName: ${STOR_NAME}
-    serviceAccountName:  ${SANAME}
+    serviceAccountName: ${SANAME}
+  ui:
+    enabled: true
+    serviceAccountName: ${SANAME}
+  nginx:
+    nginxIsPrimaryIngress: false
+  openshiftingress:
+    enabled: true
 
 EOL
 
@@ -30,15 +37,6 @@ EOL
       cat >> ${DEST_DIR}/xl-release.yaml << EOL
 
   kubeturbo:
-    enabled: true
-EOL
-    fi
-
-    if [[ "${PROBES}" =~ openshiftingress ]]; then
-      echo "adding openshiftingress probe..."
-      cat >> ${DEST_DIR}/xl-release.yaml << EOL
-  
-  openshiftingress:
     enabled: true
 EOL
     fi

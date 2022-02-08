@@ -2,6 +2,7 @@ locals {
   name          = "turbo"
   bin_dir       = module.setup_clis.bin_dir
   yaml_dir      = "${path.cwd}/.tmp/${local.name}/chart/${local.name}"
+  inst_dir      = "${local.yaml_dir}/instance"
 
   layer = "services"
   application_branch = "main"
@@ -74,7 +75,7 @@ module "service_account" {
     verbs = ["*"]
   },{
     apiGroups = ["security.openshift.io"]
-    resourceNames = ["turbonomic-t8c-operator-anyuid"]
+    resourceNames = ["turbonomic-t8c-operator-anyuid","turbonomic-t8c-operator-privileged"]
     resources = ["securitycontextconstraints"]
     verbs = ["use"]
   }
@@ -84,15 +85,44 @@ module "service_account" {
   rbac_cluster_scope = true
 }
 
+module setup_group_scc {
+  depends_on = [module.service_account]
+
+  source = "github.com/cloud-native-toolkit/terraform-gitops-sccs.git"
+
+  gitops_config = var.gitops_config
+  git_credentials = var.git_credentials
+  namespace = var.namespace
+  service_account = ""
+  sccs = ["anyuid"]
+  server_name = var.server_name
+  group = true
+}
+
 resource null_resource deploy_operator {
+  depends_on = [module.setup_group_scc]
+
   provisioner "local-exec" {
-    command = "${path.module}/scripts/deployOp.sh '${local.yaml_dir}' '${module.service_account.name}'"
+    command = "${path.module}/scripts/deployOp.sh '${local.yaml_dir}' '${module.service_account.name}' '${var.namespace}'"
     
     environment = {
       BIN_DIR = local.bin_dir
     }
   }
-} 
+}
+
+resource null_resource setup_gitops_operator {
+  depends_on = [null_resource.deploy_operator]
+
+  provisioner "local-exec" {
+    command = "${local.bin_dir}/igc gitops-module '${local.name}' -n '${var.namespace}' --contentDir '${local.yaml_dir}' --serverName '${var.server_name}' -l '${local.layer}' --debug"
+
+    environment = {
+      GIT_CREDENTIALS = yamlencode(nonsensitive(var.git_credentials))
+      GITOPS_CONFIG   = yamlencode(var.gitops_config)
+    }
+  }
+}
 
 resource "null_resource" "deploy_instance" {
   depends_on = [null_resource.deploy_operator]
@@ -101,19 +131,19 @@ resource "null_resource" "deploy_instance" {
   }
 
   provisioner "local-exec" {
-    command = "${path.module}/scripts/deployInstance.sh '${local.yaml_dir}' '${module.service_account.name}' '${self.triggers.probes}' ${var.storage_class_name}"
+    command = "${path.module}/scripts/deployInstance.sh '${local.inst_dir}' '${module.service_account.name}' '${self.triggers.probes}' ${var.storage_class_name}"
 
     environment = {
       BIN_DIR = local.bin_dir
     }
   }
-}
+} 
 
-resource null_resource setup_gitops {
-  depends_on = [null_resource.deploy_operator,null_resource.deploy_instance]
+resource null_resource setup_gitops_instance {
+  depends_on = [null_resource.setup_gitops_operator,null_resource.deploy_instance]
 
   provisioner "local-exec" {
-    command = "${local.bin_dir}/igc gitops-module '${local.name}' -n '${var.namespace}' --contentDir '${local.yaml_dir}' --serverName '${var.server_name}' -l '${local.layer}' --debug"
+    command = "${local.bin_dir}/igc gitops-module 'turboinst' -n '${var.namespace}' --contentDir '${local.inst_dir}' --serverName '${var.server_name}' -l '${local.layer}' --debug"
 
     environment = {
       GIT_CREDENTIALS = yamlencode(nonsensitive(var.git_credentials))
