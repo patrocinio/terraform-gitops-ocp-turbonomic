@@ -1,4 +1,3 @@
-!!map
 id: github.com/cloud-native-toolkit/terraform-gitops-ocp-turbonomic
 name: gitops-ocp-turbonomic
 type: terraform
@@ -14,28 +13,169 @@ versions:
       - id: gitops
         refs:
           - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
-            version: ">= 1.1.0"
+            version: '>= 1.1.0'
       - id: namespace
         refs:
           - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
-            version: ">= 1.10.0"
+            version: '>= 1.10.0'
       - id: storageclass
         optional: true
         refs:
-          - source: github.com/cloud-native-toolkit/terraform-gitops-ocp-storageclass.git
-            version: ">= 1.2.0"
+          - source: >-
+              github.com/cloud-native-toolkit/terraform-gitops-ocp-storageclass.git
+            version: '>= 1.2.0'
+    variables:
+      - name: gitops_config
+        type: |-
+          object({
+              boostrap = object({
+                argocd-config = object({
+                  project = string
+                  repo = string
+                  url = string
+                  path = string
+                })
+              })
+              infrastructure = object({
+                argocd-config = object({
+                  project = string
+                  repo = string
+                  url = string
+                  path = string
+                })
+                payload = object({
+                  repo = string
+                  url = string
+                  path = string
+                })
+              })
+              services = object({
+                argocd-config = object({
+                  project = string
+                  repo = string
+                  url = string
+                  path = string
+                })
+                payload = object({
+                  repo = string
+                  url = string
+                  path = string
+                })
+              })
+              applications = object({
+                argocd-config = object({
+                  project = string
+                  repo = string
+                  url = string
+                  path = string
+                })
+                payload = object({
+                  repo = string
+                  url = string
+                  path = string
+                })
+              })
+            })
+        description: Config information regarding the gitops repo structure
+        moduleRef:
+          id: gitops
+          output: gitops_config
+      - name: git_credentials
+        type: |-
+          list(object({
+              repo = string
+              url = string
+              username = string
+              token = string
+            }))
+        description: The credentials for the gitops repo(s)
+        moduleRef:
+          id: gitops
+          output: git_credentials
+      - name: kubeseal_cert
+        type: string
+        description: The certificate/public key used to encrypt the sealed secrets
+        default: ''
+        moduleRef:
+          id: gitops
+          output: sealed_secrets_cert
+      - name: server_name
+        type: string
+        description: The name of the server
+        default: default
+        moduleRef:
+          id: gitops
+          output: server_name
+      - name: probes
+        description: The probes to deploy with turbonomic
+        type: list(string)
+        default:
+          - kubeturbo
+      - name: storage_class_name
+        description: >-
+          Name of the block storage class to use - if multizone deployment then
+          waitforfirstconsumer must be set on storageclass binding mode
+        type: string
+        moduleRef:
+          id: storageclass
+          output: storage_name
+      - name: namespace
+        type: string
+        description: Name of the existing namespace where turbo will be deployed.
+        default: turbonomic
+        moduleRef:
+          id: namespace
+          output: name
+      - name: pullsecret_name
+        type: string
+        description: >-
+          Name of the docker pull secret if needed - only needed if hitting
+          docker rate limit
+        default: ''
+    version: v2.1.1
+    outputs: []
+  - platforms:
+      - kubernetes
+      - ocp4
+    dependencies:
+      - id: gitops
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
+            version: '>= 1.1.0'
+      - id: namespace
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
+            version: '>= 1.10.0'
+      - id: storageclass
+        optional: true
+        refs:
+          - source: >-
+              github.com/cloud-native-toolkit/terraform-gitops-ocp-storageclass.git
+            version: '>= 1.2.0'
     variables:
       - name: gitops_config
         moduleRef:
           id: gitops
           output: gitops_config
-        type: object({ boostrap = object({ argocd-config = object({ project = string repo = string url = string path = string }) }) infrastructure = object({ argocd-config = object({ project = string repo = string url = string path = string }) payload = object({ repo = string url = string path = string }) }) services = object({ argocd-config = object({ project = string repo = string url = string path = string }) payload = object({ repo = string url = string path = string }) }) applications = object({ argocd-config = object({ project = string repo = string url = string path = string }) payload = object({ repo = string url = string path = string }) }) })
+        type: >-
+          object({ boostrap = object({ argocd-config = object({ project = string
+          repo = string url = string path = string }) }) infrastructure =
+          object({ argocd-config = object({ project = string repo = string url =
+          string path = string }) payload = object({ repo = string url = string
+          path = string }) }) services = object({ argocd-config = object({
+          project = string repo = string url = string path = string }) payload =
+          object({ repo = string url = string path = string }) }) applications =
+          object({ argocd-config = object({ project = string repo = string url =
+          string path = string }) payload = object({ repo = string url = string
+          path = string }) }) })
         description: Config information regarding the gitops repo structure
       - name: git_credentials
         moduleRef:
           id: gitops
           output: git_credentials
-        type: list(object({ repo = string url = string username = string token = string }))
+        type: >-
+          list(object({ repo = string url = string username = string token =
+          string }))
         description: The credentials for the gitops repo(s)
       - name: server_name
         moduleRef:
@@ -57,21 +197,26 @@ versions:
           output: sealed_secrets_cert
         type: string
         description: The certificate/public key used to encrypt the sealed secrets
-        default: ""
+        default: ''
       - name: storage_class_name
         moduleRef:
           id: storageclass
           output: storage_name
         type: string
-        description: Name of the block storage class to use - if multizone deployment then waitforfirstconsumer must be set on storageclass binding mode
+        description: >-
+          Name of the block storage class to use - if multizone deployment then
+          waitforfirstconsumer must be set on storageclass binding mode
       - name: probes
         type: list(string)
         description: The probes to deploy with turbonomic
-        default: [kubeturbo]
+        default:
+          - kubeturbo
       - name: pullsecret_name
         type: string
-        description: Name of the docker pull secret if needed - only needed if hitting docker rate limit
-        default: ""
+        description: >-
+          Name of the docker pull secret if needed - only needed if hitting
+          docker rate limit
+        default: ''
     version: v2.1.0
   - platforms:
       - kubernetes
@@ -80,28 +225,41 @@ versions:
       - id: gitops
         refs:
           - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
-            version: ">= 1.1.0"
+            version: '>= 1.1.0'
       - id: namespace
         refs:
           - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
-            version: ">= 1.10.0"
+            version: '>= 1.10.0'
       - id: storageclass
         optional: true
         refs:
-          - source: github.com/cloud-native-toolkit/terraform-gitops-ocp-storageclass.git
-            version: ">= 1.2.0"
+          - source: >-
+              github.com/cloud-native-toolkit/terraform-gitops-ocp-storageclass.git
+            version: '>= 1.2.0'
     variables:
       - name: gitops_config
         moduleRef:
           id: gitops
           output: gitops_config
-        type: object({ boostrap = object({ argocd-config = object({ project = string repo = string url = string path = string }) }) infrastructure = object({ argocd-config = object({ project = string repo = string url = string path = string }) payload = object({ repo = string url = string path = string }) }) services = object({ argocd-config = object({ project = string repo = string url = string path = string }) payload = object({ repo = string url = string path = string }) }) applications = object({ argocd-config = object({ project = string repo = string url = string path = string }) payload = object({ repo = string url = string path = string }) }) })
+        type: >-
+          object({ boostrap = object({ argocd-config = object({ project = string
+          repo = string url = string path = string }) }) infrastructure =
+          object({ argocd-config = object({ project = string repo = string url =
+          string path = string }) payload = object({ repo = string url = string
+          path = string }) }) services = object({ argocd-config = object({
+          project = string repo = string url = string path = string }) payload =
+          object({ repo = string url = string path = string }) }) applications =
+          object({ argocd-config = object({ project = string repo = string url =
+          string path = string }) payload = object({ repo = string url = string
+          path = string }) }) })
         description: Config information regarding the gitops repo structure
       - name: git_credentials
         moduleRef:
           id: gitops
           output: git_credentials
-        type: list(object({ repo = string url = string username = string token = string }))
+        type: >-
+          list(object({ repo = string url = string username = string token =
+          string }))
         description: The credentials for the gitops repo(s)
       - name: server_name
         moduleRef:
@@ -123,21 +281,26 @@ versions:
           output: sealed_secrets_cert
         type: string
         description: The certificate/public key used to encrypt the sealed secrets
-        default: ""
+        default: ''
       - name: storage_class_name
         moduleRef:
           id: storageclass
           output: storage_name
         type: string
-        description: Name of the block storage class to use - if multizone deployment then waitforfirstconsumer must be set on storageclass binding mode
+        description: >-
+          Name of the block storage class to use - if multizone deployment then
+          waitforfirstconsumer must be set on storageclass binding mode
       - name: probes
         type: list(string)
         description: The probes to deploy with turbonomic
-        default: [kubeturbo]
+        default:
+          - kubeturbo
       - name: pullsecret_name
         type: string
-        description: Name of the docker pull secret if needed - only needed if hitting docker rate limit
-        default: ""
+        description: >-
+          Name of the docker pull secret if needed - only needed if hitting
+          docker rate limit
+        default: ''
     version: v2.0.0
   - platforms:
       - kubernetes
@@ -146,28 +309,41 @@ versions:
       - id: gitops
         refs:
           - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
-            version: ">= 1.1.0"
+            version: '>= 1.1.0'
       - id: namespace
         refs:
           - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
-            version: ">= 1.10.0"
+            version: '>= 1.10.0'
       - id: storageclass
         optional: true
         refs:
-          - source: github.com/cloud-native-toolkit/terraform-gitops-ocp-storageclass.git
-            version: ">= 1.2.0"
+          - source: >-
+              github.com/cloud-native-toolkit/terraform-gitops-ocp-storageclass.git
+            version: '>= 1.2.0'
     variables:
       - name: gitops_config
         moduleRef:
           id: gitops
           output: gitops_config
-        type: object({ boostrap = object({ argocd-config = object({ project = string repo = string url = string path = string }) }) infrastructure = object({ argocd-config = object({ project = string repo = string url = string path = string }) payload = object({ repo = string url = string path = string }) }) services = object({ argocd-config = object({ project = string repo = string url = string path = string }) payload = object({ repo = string url = string path = string }) }) applications = object({ argocd-config = object({ project = string repo = string url = string path = string }) payload = object({ repo = string url = string path = string }) }) })
+        type: >-
+          object({ boostrap = object({ argocd-config = object({ project = string
+          repo = string url = string path = string }) }) infrastructure =
+          object({ argocd-config = object({ project = string repo = string url =
+          string path = string }) payload = object({ repo = string url = string
+          path = string }) }) services = object({ argocd-config = object({
+          project = string repo = string url = string path = string }) payload =
+          object({ repo = string url = string path = string }) }) applications =
+          object({ argocd-config = object({ project = string repo = string url =
+          string path = string }) payload = object({ repo = string url = string
+          path = string }) }) })
         description: Config information regarding the gitops repo structure
       - name: git_credentials
         moduleRef:
           id: gitops
           output: git_credentials
-        type: list(object({ repo = string url = string username = string token = string }))
+        type: >-
+          list(object({ repo = string url = string username = string token =
+          string }))
         description: The credentials for the gitops repo(s)
       - name: server_name
         moduleRef:
@@ -189,19 +365,26 @@ versions:
           output: sealed_secrets_cert
         type: string
         description: The certificate/public key used to encrypt the sealed secrets
-        default: ""
+        default: ''
       - name: storage_class_name
         moduleRef:
           id: storageclass
           output: storage_name
         type: string
-        description: Name of the block storage class to use - if multizone deployment then waitforfirstconsumer must be set on storageclass binding mode
+        description: >-
+          Name of the block storage class to use - if multizone deployment then
+          waitforfirstconsumer must be set on storageclass binding mode
       - name: probes
         type: list(string)
         description: The probes to deploy with turbonomic
-        default: [kubeturbo, instana, openshiftingress]
+        default:
+          - kubeturbo
+          - instana
+          - openshiftingress
       - name: pullsecret_name
         type: string
-        description: Name of the docker pull secret if needed - only needed if hitting docker rate limit
-        default: ""
+        description: >-
+          Name of the docker pull secret if needed - only needed if hitting
+          docker rate limit
+        default: ''
     version: v1.1.1
