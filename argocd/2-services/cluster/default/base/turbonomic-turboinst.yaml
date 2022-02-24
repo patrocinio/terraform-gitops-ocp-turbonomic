@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: turbonomic-turboinst
+spec:
+  destination:
+    namespace: turbonomic
+    server: https://kubernetes.default.svc
+  project: 2-services
+  source:
+    path: payload/2-services/namespace/turbonomic/turboinst
+    repoURL: https://github.com/patrocinio/terraform-gitops-ocp-turbonomic
+    targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  ignoreDifferences: []
