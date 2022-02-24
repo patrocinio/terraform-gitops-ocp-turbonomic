@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: turbonomic
+  annotations:
+    argocd.argoproj.io/sync-wave: "-30"
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: turbonomic-operator-group
+  namespace: turbonomic
+  annotations:
+    argocd.argoproj.io/sync-wave: "-20"
+spec:
+  targetNamespaces:
+    - turbonomic
+---
