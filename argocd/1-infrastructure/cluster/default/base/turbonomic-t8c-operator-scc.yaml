@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: turbonomic-t8c-operator-scc
+spec:
+  destination:
+    namespace: turbonomic
+    server: https://kubernetes.default.svc
+  project: 1-infrastructure
+  source:
+    path: payload/1-infrastructure/namespace/turbonomic/t8c-operator-scc
+    repoURL: https://github.com/patrocinio/terraform-gitops-ocp-turbonomic
+    targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  ignoreDifferences: []

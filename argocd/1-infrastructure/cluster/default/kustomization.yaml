@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - base/namespace-turbonomic.yaml
   - base/turbonomic-t8c-operator-sa.yaml
+  - base/turbonomic-t8c-operator-scc.yaml
