@@ -5,3 +5,4 @@ resources:
   - base/turbonomic-t8c-operator-rbac.yaml
   - base/turbonomic-t8c-operator-sa.yaml
   - base/turbonomic-t8c-operator-scc.yaml
+  - base/turbonomic-turbonomic-group.yaml
