@@ -1,0 +1,141 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: t8c-operator
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+rules:
+- "apiGroups":
+  - ""
+  "resourceNames": null
+  "resources":
+  - "configmaps"
+  - "endpoints"
+  - "events"
+  - "persistentvolumeclaims"
+  - "pods"
+  - "secrets"
+  - "serviceaccounts"
+  - "services"
+  "verbs":
+  - "*"
+- "apiGroups":
+  - "apps"
+  "resourceNames": null
+  "resources":
+  - "daemonsets"
+  - "deployments"
+  - "statefulsets"
+  - "replicasets"
+  "verbs":
+  - "*"
+- "apiGroups":
+  - "apps"
+  "resourceNames": null
+  "resources":
+  - "deployments/finalizers"
+  "verbs":
+  - "update"
+- "apiGroups":
+  - "extensions"
+  "resourceNames": null
+  "resources":
+  - "deployments"
+  "verbs":
+  - "*"
+- "apiGroups":
+  - ""
+  "resourceNames": null
+  "resources":
+  - "namespaces"
+  "verbs":
+  - "get"
+- "apiGroups":
+  - "policy"
+  "resourceNames": null
+  "resources":
+  - "podsecuritypolicies"
+  - "poddisruptionbudgets"
+  "verbs":
+  - "*"
+- "apiGroups":
+  - "rbac.authorization.k8s.io"
+  "resourceNames": null
+  "resources":
+  - "clusterrolebindings"
+  - "clusterroles"
+  - "rolebindings"
+  - "roles"
+  "verbs":
+  - "*"
+- "apiGroups":
+  - "batch"
+  "resourceNames": null
+  "resources":
+  - "jobs"
+  "verbs":
+  - "*"
+- "apiGroups":
+  - "monitoring.coreos.com"
+  "resourceNames": null
+  "resources":
+  - "servicemonitors"
+  "verbs":
+  - "get"
+  - "create"
+- "apiGroups":
+  - "charts.helm.k8s.io"
+  "resourceNames": null
+  "resources":
+  - "*"
+  "verbs":
+  - "*"
+- "apiGroups":
+  - "networking.istio.io"
+  "resourceNames": null
+  "resources":
+  - "gateways"
+  - "virtualservices"
+  "verbs":
+  - "*"
+- "apiGroups":
+  - "cert-manager.io"
+  "resourceNames": null
+  "resources":
+  - "certificates"
+  "verbs":
+  - "*"
+- "apiGroups":
+  - "route.openshift.io"
+  "resourceNames": null
+  "resources":
+  - "routes"
+  - "routes/custom-host"
+  "verbs":
+  - "*"
+- "apiGroups":
+  - "security.openshift.io"
+  "resourceNames":
+  - "turbonomic-t8c-operator-anyuid"
+  - "turbonomic-t8c-operator-privileged"
+  "resources":
+  - "securitycontextconstraints"
+  "verbs":
+  - "use"
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: t8c-operator
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: t8c-operator
+subjects:
+- kind: ServiceAccount
+  name: t8c-operator
+  namespace: turbonomic
+---
